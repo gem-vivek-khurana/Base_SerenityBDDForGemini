@@ -62,6 +62,11 @@ public class GridObjectOperations extends PageObjectOperations {
         return getAllTableHeaders(tableElement).stream().filter(r -> !r.equals("")).toList();
     }
 
+    /**
+     * Get the total number of rows in a table's body.
+     * @param table {@link By} locator
+     * @return Integer
+     */
     public int getRowCount(By table) {
         WebElement tableElement = perform.getWebElement(table);
         return tableElement.findElements(By.cssSelector("tbody tr")).size();

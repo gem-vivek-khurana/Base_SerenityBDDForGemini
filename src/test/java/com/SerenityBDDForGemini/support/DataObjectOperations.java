@@ -15,6 +15,12 @@ import java.util.stream.Collectors;
 public class DataObjectOperations {
     final Faker faker = new Faker(new Locale("en-US"));
 
+    /**
+     * Takes the value as defined in the switch Parameter in String encapsulated in $---$ and convert to relevant string
+     * for dynamic data in feature file.
+     * @param value encapsulated in $---$
+     * @return String
+     */
     public String transformDataValue(String value) {
         if (value.contains("`$`") || value.contains("`$") || value.contains("$`")) {
             value = value.replace("`$", "$").replace("$`", "$");
@@ -81,6 +87,10 @@ public class DataObjectOperations {
 
     /**
      * Returns the date in accordance with the value in #{@link LocalDate} format
+     * As per the params with 't' or  'w', this method has the capability to add or subtract the dates in terms of days,
+     * months or years.
+     * When using this method for printing a value, make sure to use {@link #transformUIDateValue(String)} with it
+     * as this will return {@link LocalDate} format of Java
      * @param value t, t+1, t-1, t+2m, t-2m, t+2y, t-2y, w
      * @return #@{@link LocalDate}
      */
@@ -159,15 +169,35 @@ public class DataObjectOperations {
         return finalValue;
     }
 
+    /**
+     * Return the string format as per the passed {@link DateTimeFormatter} from {@link DateTimeFormatters} enum
+     * @param value t, t+1, t-1, t+2m, t-2m, t+2y, t-2y, w
+     * @param dtf {@link DateTimeFormatter}
+     * @return String
+     */
     public String transformDateValue(String value, DateTimeFormatter dtf) {
         return dtf.format(transformDateValue(value));
     }
 
+    /**
+     * Return the string format of the date in MM/dd/yyyy format.
+     * @param value t, t+1, t-1, t+2m, t-2m, t+2y, t-2y, w
+     * @return String
+     */
     public String transformUIDateValue(String value) {
         return transformDateValue(value, DateTimeFormatters.UI_DTF.getDtf());
     }
 
-    public LocalTime transformTimeValue(String value) {
+    /**
+     * Returns the time in accordance with the value in #{@link LocalTime} format
+     * As per the params with 'n', this method has the capability to add or subtract the current time in terms of minute
+     * and hour.
+     * When using this method for printing a value, make sure to use
+     * {@link #transformTimeValue(String, DateTimeFormatter)} with it as this will return {@link LocalTime} format of
+     * Java.
+     * @param value n, n+1, n-1, n+2m, n-2m, n+2h, n-2h
+     * @return #@{@link LocalTime}
+     */public LocalTime transformTimeValue(String value) {
         if (value.equals("n")) {
             return LocalTime.now();
         }
@@ -194,6 +224,12 @@ public class DataObjectOperations {
         return finalValue;
     }
 
+    /**
+     * Extract {@link DateTimeFormatters} string value from param value
+     * For {@link DateTimeFormatter} string value, refer to enum {@link DateTimeFormatters}
+     * @param value t&dtf=short_year_dtf
+     * @return String
+     */
     public String extractDtfAndTransformDateValue(String value) {
         if (!value.contains("&dtf=")) throw new RuntimeException("This method is only supported when dtf value is" +
                 " provided in the value.");
@@ -201,6 +237,12 @@ public class DataObjectOperations {
         return transformDateValue(breakDtf[0], DataObjectOperations.DateTimeFormatters.getDtf(breakDtf[1]));
     }
 
+    /**
+     * Extract {@link DateTimeFormatters} string value from param value
+     * For {@link DateTimeFormatter} string value, refer to enum {@link DateTimeFormatters}
+     * @param value n&dtf=non_padded_ui_time_dtf
+     * @return String
+     */
     public String extractDtfAndTransformTimeValue(String value) {
         if (!value.contains("&dtf=")) throw new RuntimeException("This method is only supported when dtf value is" +
                 " provided in the value.");
@@ -208,10 +250,20 @@ public class DataObjectOperations {
         return transformTimeValue(breakDtf[0], DataObjectOperations.DateTimeFormatters.getDtf(breakDtf[1]));
     }
 
+    /**
+     * Return the string format as per the passed {@link DateTimeFormatter} from {@link DateTimeFormatters} enum
+     * @param value n, n+1, n-1, n+2m, n-2m, n+2h, n-2h
+     * @param dtf {@link DateTimeFormatter}
+     * @return String
+     */
     public String transformTimeValue(String value, DateTimeFormatter dtf) {
         return dtf.format(transformTimeValue(value));
     }
 
+    /**
+     * Generate faker data for US Locale using {@link Faker} library
+     * @return HashMap<String, String>
+     */
     public HashMap<String, String> generateFakeData() {
         HashMap<String, String> fakeData = new HashMap<>();
         Address address = faker.address();
@@ -238,6 +290,11 @@ public class DataObjectOperations {
         return fakeData;
     }
 
+    /**
+     * Transform data table from a step for value which is encapsulated in $---$
+     * @param dataTable
+     * @return List<Map<String, String>>
+     */
     public List<Map<String, String>> transformDataTable(List<Map<String, String>> dataTable) {
         dataTable = createWritableCopy(dataTable);
         dataTable.forEach(dataRow ->
@@ -250,15 +307,28 @@ public class DataObjectOperations {
         return dataTable;
     }
 
+    /**
+     * Change the data table from step in feature from Unmodifiable collection to modifiable.
+     * @param dataTable
+     * @return List<Map<String, String>>
+     */
     public List<Map<String, String>> createWritableCopy(List<Map<String, String>> dataTable) {
         return dataTable.stream().map(HashMap::new).collect(Collectors.toList());
     }
 
+    /**
+     * Remove Keys map from data table and return the list
+     * @param listOfMap
+     * @return List<String>
+     */
     public List<String> transformListHashToStringList(List<Map<String, String>> listOfMap){
         return listOfMap.stream().map(r -> r.values().toString()
                 .replace("[", "").replace("]", "")).toList();
     }
 
+    /**
+     * Enum class holding multiple patterns of {@link DateTimeFormatter}
+     */
     public enum DateTimeFormatters {
         UI_DTF(DateTimeFormatter.ofPattern("MM/dd/yyyy")), NAME_DTF(DateTimeFormatter.ofPattern("MMddyyyy")),
         MONTH_DATE(DateTimeFormatter.ofPattern("MMMM d, yyyy")), DATE_MONTH(DateTimeFormatter.ofPattern("d MMMM yyyy")),

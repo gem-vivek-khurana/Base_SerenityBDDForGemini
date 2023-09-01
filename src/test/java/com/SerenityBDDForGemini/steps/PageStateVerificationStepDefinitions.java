@@ -51,7 +51,7 @@ public class PageStateVerificationStepDefinitions {
                 .toLowerCase() + ".dialogs." + pageObjectOperations.pageObjectName(dialog));
     }
 
-    @Then("I should be on the {string} tab of the {} page under the {string} workflow")
+    @Then("I should be on the {string} tab of the {string} page under the {string} workflow")
     public void iShouldBeOnTheTabOfThePageUnderTheWorkflow(String tab, String page, String workflow) throws IllegalAccessException {
         Class<?> tabClass = pageObjectOperations.getTabClass(tab, page, workflow);
         Field field = pageObjectOperations.poeTabClass("TAB_LOADED", tab, page, workflow);
