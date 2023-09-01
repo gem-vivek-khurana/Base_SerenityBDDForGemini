@@ -86,7 +86,7 @@ public class DataObjectOperations {
      */
     public LocalDate transformDateValue(String value) {
         if (value.equals("t")) return LocalDate.now();
-        LocalDate currentWeekFirstDay = null;
+        LocalDate currentWeekFirstDay;
         if (value.equals("w")) {
             currentWeekFirstDay = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
             return currentWeekFirstDay;
@@ -252,6 +252,11 @@ public class DataObjectOperations {
 
     public List<Map<String, String>> createWritableCopy(List<Map<String, String>> dataTable) {
         return dataTable.stream().map(HashMap::new).collect(Collectors.toList());
+    }
+
+    public List<String> transformListHashToStringList(List<Map<String, String>> listOfMap){
+        return listOfMap.stream().map(r -> r.values().toString()
+                .replace("[", "").replace("]", "")).toList();
     }
 
     public enum DateTimeFormatters {

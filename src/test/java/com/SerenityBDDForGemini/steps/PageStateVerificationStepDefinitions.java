@@ -41,4 +41,23 @@ public class PageStateVerificationStepDefinitions {
         Serenity.setSessionVariable("Current Page").to(pageObjectOperations.pageObjectName(workflow)
                 .toLowerCase() + ".grids." + pageObjectOperations.pageObjectName(grid));
     }
+
+    @Then("I should be on the {string} dialog under the {string} workflow")
+    public void iShouldBeOnTheDialogUnderTheWorkflow(String dialog, String workflow) throws IllegalAccessException {
+        Class<?> dialogClass = pageObjectOperations.getPageClass(dialog, workflow);
+        Field field = pageObjectOperations.poeDialogClass("DIALOG_LOADED", dialog, workflow);
+        verifyStateOf.theVisibilityOf(field, dialogClass);
+        Serenity.setSessionVariable("Current Page").to(pageObjectOperations.pageObjectName(workflow)
+                .toLowerCase() + ".dialogs." + pageObjectOperations.pageObjectName(dialog));
+    }
+
+    @Then("I should be on the {string} tab of the {} page under the {string} workflow")
+    public void iShouldBeOnTheTabOfThePageUnderTheWorkflow(String tab, String page, String workflow) throws IllegalAccessException {
+        Class<?> tabClass = pageObjectOperations.getTabClass(tab, page, workflow);
+        Field field = pageObjectOperations.poeTabClass("TAB_LOADED", tab, page, workflow);
+        verifyStateOf.theVisibilityOf(field, tabClass);
+        Serenity.setSessionVariable("Current Page").to(pageObjectOperations.pageObjectName(workflow)
+                .toLowerCase() + ".tabs." + pageObjectOperations.pageObjectName(page) + "." +
+                pageObjectOperations.pageObjectName(tab));
+    }
 }

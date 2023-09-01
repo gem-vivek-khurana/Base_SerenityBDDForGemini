@@ -62,6 +62,11 @@ public class GridObjectOperations extends PageObjectOperations {
         return getAllTableHeaders(tableElement).stream().filter(r -> !r.equals("")).toList();
     }
 
+    public int getRowCount(By table) {
+        WebElement tableElement = perform.getWebElement(table);
+        return tableElement.findElements(By.cssSelector("tbody tr")).size();
+    }
+
     public HashMap<String, ArrayList<String>> getRowsDataForColumns(List<String> columns, By table) {
         HashMap<String, ArrayList<String>> rowsForColumnsMap = new HashMap<>();
         List<String> tableHeaders = getAllTableHeaders(table);
