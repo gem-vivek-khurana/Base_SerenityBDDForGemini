@@ -25,9 +25,10 @@ public class GridObjectOperations extends PageObjectOperations {
     DataObjectOperations dataObjectOperations;
 
     /**
-     * Returns all Table Headers including the empty headings
-     * @param table: {@link By}
-     * @return List<String>
+     * Returns all table headers, including empty headings, for a given table element.
+     *
+     * @param table The locator for the table element.
+     * @return List of table headers as strings.
      */
     public List<String> getAllTableHeaders(By table) {
         WebElement tableElement = perform.getWebElement(table);
@@ -35,9 +36,10 @@ public class GridObjectOperations extends PageObjectOperations {
     }
 
     /**
-     * Returns all Table Headers including the empty headings
-     * @param tableElement: {@link WebElement}
-     * @return List<String>
+     * Returns all table headers, including empty headings, for a given table element.
+     *
+     * @param tableElement The table WebElement.
+     * @return List of table headers as strings.
      */
     public List<String> getAllTableHeaders(WebElement tableElement) {
         return tableElement.findElements(By.tagName("th")).stream().map(WebElement::getText)
@@ -45,33 +47,43 @@ public class GridObjectOperations extends PageObjectOperations {
     }
 
     /**
-     * Returns the Visible Table Headers
-     * @param table
-     * @return List<String>
+     * Returns the visible table headers for a given table locator.
+     *
+     * @param table The locator for the table element.
+     * @return List of visible table headers as strings.
      */
     public List<String> getTableHeaders(By table) {
         return getAllTableHeaders(table).stream().filter(r -> !r.equals("")).toList();
     }
 
     /**
-     * Returns the Visible Table Headers
-     * @param tableElement: {@link WebElement}
-     * @return List<String>
+     * Returns the visible table headers for a given table WebElement.
+     *
+     * @param tableElement The table WebElement.
+     * @return List of visible table headers as strings.
      */
     public List<String> getTableHeaders(WebElement tableElement) {
         return getAllTableHeaders(tableElement).stream().filter(r -> !r.equals("")).toList();
     }
 
     /**
-     * Get the total number of rows in a table's body.
-     * @param table {@link By} locator
-     * @return Integer
+     * Get the total number of rows in a table's body for a given table locator.
+     *
+     * @param table The locator for the table element.
+     * @return The number of rows in the table.
      */
     public int getRowCount(By table) {
         WebElement tableElement = perform.getWebElement(table);
         return tableElement.findElements(By.cssSelector("tbody tr")).size();
     }
 
+    /**
+     * Get data of the rows as a List present on the UI under a column in the table.
+     *
+     * @param columns List of Columns to fetch the data
+     * @param table {@link By} locator of the table
+     * @return HashMap<String, ArrayList<String>>
+     */
     public HashMap<String, ArrayList<String>> getRowsDataForColumns(List<String> columns, By table) {
         HashMap<String, ArrayList<String>> rowsForColumnsMap = new HashMap<>();
         List<String> tableHeaders = getAllTableHeaders(table);
@@ -88,11 +100,14 @@ public class GridObjectOperations extends PageObjectOperations {
         return rowsForColumnsMap;
     }
 
+    /**
+     * Get values for a specified row and column as a Map for a given table locator.
+     *
+     * @param tableRow The Map containing row and column data.
+     * @param table The locator for the table element.
+     * @return Map where keys are column names, and values are the corresponding row values.
+     */
     public Map<String, String> getValueForRowColumn(Map<String, String> tableRow, By table) {
-        return getValueForRowColumn(tableRow, getDriver().findElement(table));
-    }
-
-    public Map<String, String> getValueForRowColumn(Map<String, String> tableRow, WebElement table) {
         Map<String, String> results = new HashMap<>();
         List<String> columns = new ArrayList<>(tableRow.keySet());
         if (columns.indexOf("row") != 0) {
@@ -105,8 +120,8 @@ public class GridObjectOperations extends PageObjectOperations {
             int rowNumber = Integer.parseInt(tableRow.get("row")) - 1;
             LOGGER_INFO.log("Getting Data for: " + columns.get(i));
             String tdSelector = "td:nth-child(" + (getAllTableHeaders(table).indexOf(columns.get(i)) + 1) + ")";
-            String result = table.findElements(By.cssSelector("tbody tr")).get(rowNumber).findElement(
-                    By.cssSelector(tdSelector)).getText();
+            String result = perform.getWebElement(table).findElements(By.cssSelector("tbody tr")).get(rowNumber)
+                    .findElement(By.cssSelector(tdSelector)).getText();
             if (Objects.equals(result, "")) {
                 result = null;
             }
@@ -115,6 +130,13 @@ public class GridObjectOperations extends PageObjectOperations {
         return results;
     }
 
+    /**
+     * Get the locator for a focused row in a grid for a specified row number and grid class name.
+     *
+     * @param rowNumber     The row number to focus on.
+     * @param gridClassName The class name of the grid.
+     * @return HashMap containing the selector style and locator.
+     */
     public HashMap<String, String> getRowFocusedLocator(int rowNumber, String gridClassName) {
         Field elementLoaded = pageObjectOperations.poeFieldClass("GRID_LOADED", gridClassName);
         Class<?> gridClass = pageObjectOperations.getPageClass(gridClassName);
@@ -127,6 +149,13 @@ public class GridObjectOperations extends PageObjectOperations {
         }
     }
 
+    /**
+     * Get the WebElement for a focused row in a grid for a specified row number and grid page.
+     *
+     * @param rowNumber The row number to focus on.
+     * @param gridPage  The grid page name.
+     * @return WebElement representing the focused row.
+     */
     public WebElement getRowFocusedWebElement(int rowNumber, String gridPage) {
         HashMap<String, String> rowElementMap = getRowFocusedLocator(rowNumber, gridPage);
         String selectorStyle = rowElementMap.keySet().stream().toList().get(0);
@@ -134,6 +163,14 @@ public class GridObjectOperations extends PageObjectOperations {
         return perform.getWebElement(selectorStyle, locator);
     }
 
+    /**
+     * Construct a field selector for a given main tag, field, and additional selector.
+     *
+     * @param mainTag            The main HTML tag for the field.
+     * @param field              The field locator.
+     * @param additionalSelector Additional selector (if any).
+     * @return HashMap containing the selector style and locator.
+     */
     public HashMap<String, String> constructFieldSelector(String mainTag, By field, String... additionalSelector) {
         String[] splitString = field.toString().split(":");
         HashMap<String, String> selector = new HashMap<>();

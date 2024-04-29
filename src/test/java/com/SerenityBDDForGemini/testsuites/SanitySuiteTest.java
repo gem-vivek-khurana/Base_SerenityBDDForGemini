@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
         plugin={"pretty"},
-        features="src/test/resources/features/clovek",
+        features="src/test/resources/features/retina",
         glue="com.SerenityBDDForGemini",
         tags = "not @ignore"
 )

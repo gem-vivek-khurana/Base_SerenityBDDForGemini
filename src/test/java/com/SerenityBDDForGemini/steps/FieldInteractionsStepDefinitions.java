@@ -74,6 +74,15 @@ public class FieldInteractionsStepDefinitions {
         perform.settingCheckboxAs(checkboxElement, pageClass, value);
     }
 
+    @When("I set the {string} angular typeahead as {string}")
+    public void iSetTheAngularTypeaheadAs(String fieldName, String value) {
+        String poe = pageObjectOperations.poeName(fieldName);
+        String currentPage = Serenity.sessionVariableCalled("Current Page");
+        Class<?> pageClass = pageObjectOperations.getPageClass(currentPage);
+        Field checkboxElement = pageObjectOperations.poeFieldClass(poe, currentPage);
+        perform.settingAngularTypeaheadAs(checkboxElement, pageClass, value);
+    }
+
     @When("I set these fields with following values:")
     public void iSetTheseFieldsWithFollowingValues(List<Map<String, String>> dataTable) {
         if (!dataTable.get(0).keySet().containsAll(Arrays.asList("field", "fieldType", "value")))
@@ -97,6 +106,15 @@ public class FieldInteractionsStepDefinitions {
                 case "checkbox" -> iSetCheckboxAs(tableRow.get("field"), valueToFill);
                 default -> throw new IllegalArgumentException("Unknown field type: " + tableRow.get("fieldType"));
             }
+        }
+    }
+
+    @When("I wait for {int} seconds for the delayed page load")
+    public void iWaitForSecondsForTheDelayedPageLoad(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

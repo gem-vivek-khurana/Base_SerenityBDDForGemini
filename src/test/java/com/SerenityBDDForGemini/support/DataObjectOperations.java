@@ -342,10 +342,22 @@ public class DataObjectOperations {
 
         private final DateTimeFormatter dtf;
 
+        /**
+         * Get the associated `DateTimeFormatter` for an enum value.
+         *
+         * @return The `DateTimeFormatter` instance.
+         */
         public DateTimeFormatter getDtf() {
             return this.dtf;
         }
 
+        /**
+         * Get a `DateTimeFormatter` based on its enum name.
+         *
+         * @param dtfName The name of the formatter (case-insensitive).
+         * @return The corresponding `DateTimeFormatter`.
+         * @throws RuntimeException If an unsupported `dtfName` is provided.
+         */
         public static DateTimeFormatter getDtf(String dtfName) {
             switch (dtfName.toLowerCase()) {
                 case "ui_dtf" -> {
@@ -392,11 +404,21 @@ public class DataObjectOperations {
                     "enum on #{DataObjectOperations} class");
         }
 
+        /**
+         * Get a list of all `DateTimeFormatter` instances defined in the enum.
+         *
+         * @return A list of `DateTimeFormatter` instances.
+         */
         public static ArrayList<DateTimeFormatter> getFormattersList() {
             return (ArrayList<DateTimeFormatter>) Arrays.stream(DateTimeFormatters.values())
                     .map(DateTimeFormatters::getDtf).collect(Collectors.toList());
         }
 
+        /**
+         * Constructor to associate a `DateTimeFormatter` with each enum value.
+         *
+         * @param dtf The `DateTimeFormatter` instance.
+         */
         DateTimeFormatters(DateTimeFormatter dtf) {
             this.dtf = dtf;
         }
